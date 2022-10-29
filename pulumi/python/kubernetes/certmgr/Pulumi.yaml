@@ -4,4 +4,4 @@ runtime:
   options:
     virtualenv: ../../venv
 config: ../../../../config/pulumi
-description: Sets up cert-manager.io 
+description: Sets up cert-manager.io

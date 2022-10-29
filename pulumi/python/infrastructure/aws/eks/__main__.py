@@ -8,7 +8,8 @@ import pulumi_eks as eks
 import iam
 from kic_util import pulumi_config
 
-VPCDefinition = collections.namedtuple('VPCDefinition', ['vpc_id', 'public_subnet_ids', 'private_subnet_ids'])
+VPCDefinition = collections.namedtuple(
+    'VPCDefinition', ['vpc_id', 'public_subnet_ids', 'private_subnet_ids'])
 
 
 def pulumi_vpc_project_name():
@@ -36,11 +37,14 @@ def retrieve_vpc_and_subnets(vpc) -> VPCDefinition:
 
 
 config = pulumi.Config("eks")
-k8s_version = config.get('k8s_version') if config.get('k8s_version') else '1.21'
-instance_type = config.get('instance_type') if config.get('instance_type') else 't2.large'
+k8s_version = config.get('k8s_version') if config.get(
+    'k8s_version') else '1.21'
+instance_type = config.get('instance_type') if config.get(
+    'instance_type') else 't2.large'
 min_size = config.get_int('min_size') if config.get('min_size') else 3
 max_size = config.get_int('max_size') if config.get('max_size') else 12
-desired_capacity = config.get_int('desired_capacity') if config.get('desired_capacity') else 3
+desired_capacity = config.get_int(
+    'desired_capacity') if config.get('desired_capacity') else 3
 
 stack_name = pulumi.get_stack()
 project_name = pulumi.get_project()
@@ -56,7 +60,8 @@ if aws_profile is not None:
 
 stack_ref_id = f"{pulumi_user}/{vpc_project_name}/{stack_name}"
 stack_ref = pulumi.StackReference(stack_ref_id)
-vpc_definition: pulumi.Output[VPCDefinition] = stack_ref.get_output('vpc').apply(retrieve_vpc_and_subnets)
+vpc_definition: pulumi.Output[VPCDefinition] = stack_ref.get_output(
+    'vpc').apply(retrieve_vpc_and_subnets)
 
 instance_profile = aws.iam.InstanceProfile(
     resource_name=f'node-group-profile-{project_name}-{stack_name}',

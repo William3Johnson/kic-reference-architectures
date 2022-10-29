@@ -25,7 +25,8 @@ helm_repo_url = config.get('helm_repo_url')
 if not helm_repo_url:
     helm_repo_url = 'https://helm.nginx.com/stable'
 
-pulumi.log.info(f'NGINX Ingress Controller will be deployed with the Helm Chart [{chart_name}@{chart_version}]')
+pulumi.log.info(
+    f'NGINX Ingress Controller will be deployed with the Helm Chart [{chart_name}@{chart_version}]')
 
 #
 # Allow the user to set timeout per helm chart; otherwise
@@ -37,12 +38,14 @@ if not helm_timeout:
 
 
 def infrastructure_project_name_from_project_dir(dirname: str):
-    project_path = os.path.join(script_dir, '..', '..', '..', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
 def project_name_from_utility_dir(dirname: str):
-    project_path = os.path.join(script_dir, '..', '..', '..', 'utility', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'utility', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -140,7 +143,8 @@ def build_chart_values(repo_push: dict) -> Mapping[str, Any]:
             values['controller']['image'] = {}
 
         if repository_url and image_tag:
-            pulumi.log.info(f"Using Ingress Controller image: {repository_url}:{image_tag}")
+            pulumi.log.info(
+                f"Using Ingress Controller image: {repository_url}:{image_tag}")
             values['controller']['image'].update({
                 'repository': repository_url,
                 'tag': image_tag
@@ -150,7 +154,8 @@ def build_chart_values(repo_push: dict) -> Mapping[str, Any]:
                 values['controller']['nginxplus'] = True
                 pulumi.log.info("Enabling NGINX Plus")
     else:
-        pulumi.log.info(f"Using default ingress controller image as defined in Helm chart")
+        pulumi.log.info(
+            f"Using default ingress controller image as defined in Helm chart")
 
     return values
 
@@ -163,7 +168,8 @@ k8_project_name = infrastructure_project_name_from_project_dir('kubeconfig')
 k8_stack_ref_id = f"{pulumi_user}/{k8_project_name}/{stack_name}"
 k8_stack_ref = StackReference(k8_stack_ref_id)
 kubeconfig = k8_stack_ref.require_output('kubeconfig').apply(lambda c: str(c))
-cluster_name = k8_stack_ref.require_output('cluster_name').apply(lambda c: str(c))
+cluster_name = k8_stack_ref.require_output(
+    'cluster_name').apply(lambda c: str(c))
 
 namespace_stack_ref_id = f"{pulumi_user}/{project_name_from_same_parent('ingress-controller-namespace')}/{stack_name}"
 ns_stack_ref = StackReference(namespace_stack_ref_id)
@@ -205,7 +211,7 @@ kic_release_args = ReleaseArgs(
     # are available. Set this to true to skip waiting on resources being
     # available.
     skip_await=False,
-    # If we fail, clean up 
+    # If we fail, clean up
     cleanup_on_fail=True,
     # Provide a name for our release
     name="kic",
@@ -220,7 +226,8 @@ kic_chart = Release("kic", args=kic_release_args, opts=pulumi.ResourceOptions(de
 pstatus = kic_chart.status
 
 srv = Service.get(resource_name="nginx-ingress",
-                  id=Output.concat("nginx-ingress", "/", pstatus.name, "-nginx-ingress"),
+                  id=Output.concat("nginx-ingress", "/",
+                                   pstatus.name, "-nginx-ingress"),
                   opts=pulumi.ResourceOptions(provider=k8s_provider))
 
 ingress_service = srv.status
@@ -240,8 +247,10 @@ def ingress_hostname(_ingress_service):
     return fqdn
 
 
-pulumi.export('lb_ingress_hostname', pulumi.Output.unsecret(ingress_service).apply(ingress_hostname))
+pulumi.export('lb_ingress_hostname', pulumi.Output.unsecret(
+    ingress_service).apply(ingress_hostname))
 pulumi.export('lb_ingress', pulumi.Output.unsecret(ingress_service))
 # Print out our status
 pulumi.export("kic_status", pstatus)
-pulumi.export('nginx_plus', pulumi.Output.unsecret(chart_values['controller']['nginxplus']))
+pulumi.export('nginx_plus', pulumi.Output.unsecret(
+    chart_values['controller']['nginxplus']))

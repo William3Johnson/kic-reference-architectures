@@ -71,6 +71,8 @@ def extract_password_from_k8s_secrets(secrets: Mapping[str, str], secret_name: s
 # needed. For example, if the user is taking advantage of ACME let's encrypt
 # in order to generate certs.
 #
+
+
 def k8_manifest_location():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     k8_manifest_path = os.path.join(script_dir, 'cert', 'self-sign.yaml')
@@ -82,6 +84,8 @@ def k8_manifest_location():
 # This function provides the logic to accomplish this, while still using the
 # pulumi secrets for the resulting string:
 #
+
+
 def create_pg_uri(password_object):
     user = str(accounts_admin)
     password = str(password_object)

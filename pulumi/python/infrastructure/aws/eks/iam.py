@@ -32,7 +32,7 @@ iam.RolePolicyAttachment(
     policy_arn='arn:aws:iam::aws:policy/AmazonEKSClusterPolicy',
 )
 
-## Ec2 NodeGroup Role
+# Ec2 NodeGroup Role
 
 ec2_role = iam.Role(
     'ec2-nodegroup-iam-role',

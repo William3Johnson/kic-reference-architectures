@@ -111,6 +111,7 @@ class IngressControllerBaseProvider(ResourceProvider):
 
         for param in required:
             if param not in news:
-                failures.append(CheckFailure(property_=param, reason=f'{param} must be specified'))
+                failures.append(CheckFailure(property_=param,
+                                reason=f'{param} must be specified'))
 
         return failures

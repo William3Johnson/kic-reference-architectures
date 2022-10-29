@@ -82,7 +82,8 @@ class RepositoryPushProvider(ResourceProvider):
                 continue
 
             parts = line.split('\t')
-            matching_images.append(DockerImageName(repository=parts[1], tag=parts[2], image_id=parts[0]))
+            matching_images.append(DockerImageName(
+                repository=parts[1], tag=parts[2], image_id=parts[0]))
         return matching_images
 
     @staticmethod
@@ -97,7 +98,8 @@ class RepositoryPushProvider(ResourceProvider):
             if not found:
                 found = image.tag
             else:
-                raise ValueError(f'More than one valid tag exists for image id: {image.id}')
+                raise ValueError(
+                    f'More than one valid tag exists for image id: {image.id}')
 
         return found
 
@@ -106,7 +108,8 @@ class RepositoryPushProvider(ResourceProvider):
 
         def check_for_param(param: str):
             if param not in news:
-                failures.append(CheckFailure(property_=param, reason=f'{param} must be specified'))
+                failures.append(CheckFailure(property_=param,
+                                reason=f'{param} must be specified'))
 
         for p in self.REQUIRED_PROPS:
             check_for_param(p)
@@ -148,12 +151,14 @@ class RepositoryPushProvider(ResourceProvider):
 
     def update(self, _id: str, _olds: Any, _news: Any) -> UpdateResult:
         repository_url: str = _news['repository_url']
-        image_tag_outdated = self.check_if_id_matches_tag_func(_news['image_tag'], _news['image_id'])
+        image_tag_outdated = self.check_if_id_matches_tag_func(
+            _news['image_tag'], _news['image_id'])
 
         has_tag_alias = 'image_tag_alias' in _news and _news['image_tag_alias']
 
         if has_tag_alias:
-            image_tag_alias_outdated = self.check_if_id_matches_tag_func(_news['image_tag_alias'], _news['image_id'])
+            image_tag_alias_outdated = self.check_if_id_matches_tag_func(
+                _news['image_tag_alias'], _news['image_id'])
         else:
             image_tag_alias_outdated = False
 
@@ -162,7 +167,8 @@ class RepositoryPushProvider(ResourceProvider):
                 pulumi.log.info(msg=f"Tags [{_news['image_tag']}] and [{_news['image_tag_alias']}] "
                                     f"are up to date", resource=self.resource)
             else:
-                pulumi.log.info(msg=f"Tag [{_news['image_tag']}] on remote registry is up to date", resource=self.resource)
+                pulumi.log.info(
+                    msg=f"Tag [{_news['image_tag']}] on remote registry is up to date", resource=self.resource)
 
             return UpdateResult()
 
@@ -179,7 +185,8 @@ class RepositoryPushProvider(ResourceProvider):
                             resource=self.resource)
             outputs['repo_image_name'] = str(repo_image_name)
         else:
-            pulumi.log.info(msg=f"Tag [{_news['image_tag']}] is up to date", resource=self.resource)
+            pulumi.log.info(
+                msg=f"Tag [{_news['image_tag']}] is up to date", resource=self.resource)
 
         if has_tag_alias and image_tag_alias_outdated:
             repo_image_name_alias = self.push_image_to_repo(repository_url=repository_url,
@@ -190,7 +197,8 @@ class RepositoryPushProvider(ResourceProvider):
                             resource=self.resource)
             outputs['repo_image_name_alias'] = str(repo_image_name_alias)
         elif has_tag_alias:
-            pulumi.log.info(msg=f"Tag alias [{_news['image_tag_alias']}] is up to date", resource=self.resource)
+            pulumi.log.info(
+                msg=f"Tag alias [{_news['image_tag_alias']}] is up to date", resource=self.resource)
 
         return UpdateResult(outs=outputs)
 
@@ -199,7 +207,8 @@ class RepositoryPush(Resource):
     def __init__(self,
                  name: str,
                  repository_args: pulumi.InputType['RepositoryPushArgs'],
-                 check_if_id_matches_tag_func: Callable[[str, str], bool] = None,
+                 check_if_id_matches_tag_func: Callable[[
+                     str, str], bool] = None,
                  opts: Optional[pulumi.ResourceOptions] = None) -> None:
         props = dict()
         props.update(repository_args)
@@ -220,7 +229,8 @@ class RepositoryPush(Resource):
         if 'repo_image_name_alias' not in props and repository_args.image_tag_alias:
             repo_image_alias_args = pulumi.Output.all(repository_args.repository_url,
                                                       repository_args.image_tag_alias)
-            props['repo_image_name_alias'] = repo_image_alias_args.apply(build_repo_image_alias)
+            props['repo_image_name_alias'] = repo_image_alias_args.apply(
+                build_repo_image_alias)
         if 'repo_image_id' not in props:
             props['repo_image_id'] = repository_args.image_id
 

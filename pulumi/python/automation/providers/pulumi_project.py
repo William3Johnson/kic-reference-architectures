@@ -71,7 +71,8 @@ class PulumiProject:
         config_data = self.config()
 
         if 'name' not in config_data.keys():
-            raise PulumiConfigException('Pulumi configuration did not contain required "name" key')
+            raise PulumiConfigException(
+                'Pulumi configuration did not contain required "name" key')
 
         return config_data['name']
 

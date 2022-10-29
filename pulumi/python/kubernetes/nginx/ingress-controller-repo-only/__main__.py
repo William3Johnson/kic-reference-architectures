@@ -50,7 +50,8 @@ fqdn = config.get('fqdn')
 
 def project_name_from_project_dir(dirname: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -131,7 +132,8 @@ pulumi_user = pulumi_config.get_pulumi_user()
 kube_project_name = project_name_from_project_dir('kubeconfig')
 kube_stack_ref_id = f"{pulumi_user}/{kube_project_name}/{stack_name}"
 kube_stack_ref = pulumi.StackReference(kube_stack_ref_id)
-kubeconfig = kube_stack_ref.require_output('kubeconfig').apply(lambda c: str(c))
+kubeconfig = kube_stack_ref.require_output(
+    'kubeconfig').apply(lambda c: str(c))
 
 k8s_provider = k8s.Provider(resource_name=f'ingress-controller-repo-only',
                             kubeconfig=kubeconfig)
@@ -169,7 +171,8 @@ kic_release_args = ReleaseArgs(
     # Force update if required
     force_update=True)
 
-kic_chart = Release("kic", args=kic_release_args, opts=pulumi.ResourceOptions(depends_on=[ns]))
+kic_chart = Release("kic", args=kic_release_args,
+                    opts=pulumi.ResourceOptions(depends_on=[ns]))
 
 pstatus = kic_chart.status
 
@@ -184,6 +187,7 @@ ingress_service = srv.status
 # been given.
 #
 pulumi.export('lb_ingress_hostname', fqdn)
-pulumi.export('lb_ingress_ip', pulumi.Output.unsecret(ingress_service.load_balancer.ingress[0].ip))
+pulumi.export('lb_ingress_ip', pulumi.Output.unsecret(
+    ingress_service.load_balancer.ingress[0].ip))
 # Print out our status
 pulumi.export("kic_status", pstatus)

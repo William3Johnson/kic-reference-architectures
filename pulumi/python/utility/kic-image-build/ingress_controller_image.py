@@ -42,7 +42,8 @@ class IngressControllerImage(Resource):
                 props['nginx_plus_args'] = None
 
             if 'kic_src_url' not in props or not props['kic_src_url']:
-                pulumi.log.warn("No source url specified for 'kic_src_url', using latest tag from github", self)
+                pulumi.log.warn(
+                    "No source url specified for 'kic_src_url', using latest tag from github", self)
                 props['kic_src_url'] = IngressControllerSourceArchiveUrl.from_github()
             if 'make_target' not in props or not props['make_target']:
                 pulumi.log.warn("'make_target' not specified, using " +
@@ -54,14 +55,16 @@ class IngressControllerImage(Resource):
                 repository = 'nginx/nginx-ingress'
                 latest = IngressControllerSourceArchiveUrl.latest_version().lstrip('v')
                 image_name = f'{repository}:{latest}'
-                pulumi.log.info(f'kic:image_name was not specified, defaulting to: {image_name}', self)
+                pulumi.log.info(
+                    f'kic:image_name was not specified, defaulting to: {image_name}', self)
                 props['image_name'] = image_name
             props['image_id'] = None
             props['image_tag'] = None
 
             provider = IngressControllerImagePullerProvider(self)
         else:
-            raise ValueError(f'unknown kic_image_args provided: {kic_image_args}')
+            raise ValueError(
+                f'unknown kic_image_args provided: {kic_image_args}')
 
         super().__init__(name=name, opts=opts, props=props, provider=provider)
 

@@ -52,7 +52,8 @@ def get_pulumi_user() -> str:
         env = dict(os.environ)
         env['PULUMI_SKIP_UPDATE_CHECK'] = 'true'
 
-        user, _ = external_process.run(cmd='pulumi --non-interactive whoami', env=env)
+        user, _ = external_process.run(
+            cmd='pulumi --non-interactive whoami', env=env)
     except RuntimeError as e:
         raise PulumiExecError("Unable to query pulumi username") from e
     return user.strip()

@@ -13,7 +13,8 @@ import stack_config_parser
 # Directory in which script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Default path to the MARA environment file
-DEFAULT_PATH = os.path.abspath(os.path.sep.join([SCRIPT_DIR, '..', '..', '..', 'config', 'pulumi', 'environment']))
+DEFAULT_PATH = os.path.abspath(os.path.sep.join(
+    [SCRIPT_DIR, '..', '..', '..', 'config', 'pulumi', 'environment']))
 
 # Default environment variables set for all Pulumi executions invoked by the Automation API
 DEFAULT_ENV_VARS = {

@@ -17,9 +17,9 @@ pulumi_user = pulumi_config.get_pulumi_user()
 config = pulumi.Config('linode')
 
 api_token = config.get('token') or \
-            config.get_secret('token') or \
-            os.getenv('LINODE_TOKEN') or \
-            os.getenv('LINODE_CLI_TOKEN')
+    config.get_secret('token') or \
+    os.getenv('LINODE_TOKEN') or \
+    os.getenv('LINODE_CLI_TOKEN')
 
 # For whatever reason, the Linode provider does not pickup the token from the
 # stack configuration nor from the environment variables, so we do that work
@@ -46,7 +46,8 @@ harbor_os_image = 'linode/ubuntu20.04'
 
 def project_name_from_kubernetes_dir(dirname: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'kubernetes', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'kubernetes', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -84,7 +85,8 @@ def extract_secrets(secrets: Mapping[str, str]) -> HarborSecrets:
         return password
 
     return HarborSecrets(harbor_password=decode_k8s_secret('harbor_password'),
-                         harbor_db_password=decode_k8s_secret('harbor_db_password'),
+                         harbor_db_password=decode_k8s_secret(
+                             'harbor_db_password'),
                          harbor_sudo_user_password=decode_k8s_secret('harbor_sudo_user_password'))
 
 
@@ -114,15 +116,17 @@ def build_stackscript_data(params) -> Mapping[str, str]:
         # The password for the limited sudo user
         'password': secrets.harbor_sudo_user_password,
         # The SSH Public Key that will be used to access the Linode
-         'pubkey': pubkey,
+        'pubkey': pubkey,
         # Disable root access over SSH? (Yes/No)
         'disable_root': 'Yes'
     }
 
 
 harbor_user = 'admin'
-harbor_secrets = pulumi.Output.unsecret(harbor_k8s_secrets).apply(extract_secrets)
-stackscript_data = pulumi.Output.all(harbor_secrets).apply(build_stackscript_data)
+harbor_secrets = pulumi.Output.unsecret(
+    harbor_k8s_secrets).apply(extract_secrets)
+stackscript_data = pulumi.Output.all(
+    harbor_secrets).apply(build_stackscript_data)
 
 instance = linode.Instance(resource_name='harbor',
                            region=region,
@@ -151,4 +155,5 @@ harbor_hostname = instance.ip_address.apply(build_hostname)
 pulumi.export('harbor_instance', instance)
 pulumi.export('harbor_hostname', harbor_hostname)
 pulumi.export('harbor_user', pulumi.Output.secret(harbor_user))
-pulumi.export('harbor_password', pulumi.Output.secret(harbor_secrets.harbor_password))
+pulumi.export('harbor_password', pulumi.Output.secret(
+    harbor_secrets.harbor_password))

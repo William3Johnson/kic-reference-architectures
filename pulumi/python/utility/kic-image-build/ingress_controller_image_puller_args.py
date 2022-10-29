@@ -5,6 +5,7 @@ import pulumi
 @pulumi.input_type
 class IngressControllerImagePullerArgs:
     """Arguments needed for instantiating the IngressControllerImagePullerProvider"""
+
     def __init__(self, image_name: Optional[pulumi.Input[str]] = None):
         self.__dict__ = dict()
         pulumi.set(self, 'image_name', image_name)

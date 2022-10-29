@@ -27,12 +27,14 @@ class DockerImageName:
     @staticmethod
     def from_name(image_name: str, image_id: Optional[str] = None):
         if ':' not in image_name:
-            raise DockerImageNameError(f'invalid image name - no tag specified: {image_name}')
+            raise DockerImageNameError(
+                f'invalid image name - no tag specified: {image_name}')
 
         matches = IMAGE_NAME_MATCHER.match(image_name)
 
         if not matches:
-            raise DockerImageNameError(f'unable to parse image name: {image_name}')
+            raise DockerImageNameError(
+                f'unable to parse image name: {image_name}')
 
         values = matches.groupdict()
 

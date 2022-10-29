@@ -11,7 +11,8 @@ project_name = pulumi.get_project()
 config = pulumi.Config('kic')
 image_origin = config.get('image_origin')
 if not image_origin:
-    pulumi.log.info('kic:image_origin not specified, defaulting to: repository')
+    pulumi.log.info(
+        'kic:image_origin not specified, defaulting to: repository')
     image_origin = 'registry'
 
 make_target = config.get('make_target')
@@ -42,7 +43,8 @@ if image_origin == 'source':
     ingress_image = IngressControllerImage(name='nginx-ingress-controller',
                                            kic_image_args=image_args)
 elif image_origin == 'registry':
-    image_args = IngressControllerImagePullerArgs(image_name=config.get('image_name'))
+    image_args = IngressControllerImagePullerArgs(
+        image_name=config.get('image_name'))
     ingress_image = IngressControllerImage(name='nginx-ingress-controller',
                                            kic_image_args=image_args)
 else:

@@ -17,7 +17,8 @@ class IngressControllerImagePullerProvider(BaseProvider):
     def __init__(self,
                  resource: Optional[pulumi.Resource] = None,
                  debug_logger_func=None):
-        super().__init__(resource=resource, debug_logger_func=debug_logger_func, runner=external_process.run)
+        super().__init__(resource=resource,
+                         debug_logger_func=debug_logger_func, runner=external_process.run)
 
     def pull(self, props: Any) -> Dict[str, str]:
         image_name = props['image_name']
@@ -25,10 +26,12 @@ class IngressControllerImagePullerProvider(BaseProvider):
         pulumi.log.info(f'pulling from registry: {image_name}', self.resource)
         full_image_name = self._docker_pull(image_name)
         if full_image_name != image_name:
-            pulumi.log.info(f'full image name: {full_image_name}', self.resource)
+            pulumi.log.info(
+                f'full image name: {full_image_name}', self.resource)
 
         image_id = self._docker_image_id_from_image_name(image_name)
-        image = DockerImageName.from_name(image_name=image_name, image_id=image_id)
+        image = DockerImageName.from_name(
+            image_name=image_name, image_id=image_id)
 
         return {'image_id': image.id,
                 'image_name': str(image),
@@ -52,11 +55,13 @@ class IngressControllerImagePullerProvider(BaseProvider):
         return DiffResult(changes=True)
 
     def check(self, _olds: Any, news: Any) -> CheckResult:
-        failures = BaseProvider._check_for_required_params(news, IngressControllerImagePullerProvider.REQUIRED_PROPS)
+        failures = BaseProvider._check_for_required_params(
+            news, IngressControllerImagePullerProvider.REQUIRED_PROPS)
 
         try:
             DockerImageName.from_name(news['image_name'])
         except DockerImageNameError as e:
-            failures.append(CheckFailure(property_='image_name', reason=str(e)))
+            failures.append(CheckFailure(
+                property_='image_name', reason=str(e)))
 
         return CheckResult(inputs=news, failures=failures)

@@ -9,7 +9,8 @@ import yaml
 # Directory in which script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Default path to the directory containing the global MARA Pulumi stack configuration file
-DEFAULT_DIR_PATH = os.path.abspath(os.path.sep.join([SCRIPT_DIR, '..', '..', '..', 'config', 'pulumi']))
+DEFAULT_DIR_PATH = os.path.abspath(os.path.sep.join(
+    [SCRIPT_DIR, '..', '..', '..', 'config', 'pulumi']))
 
 
 class EmptyConfigurationException(RuntimeError):
@@ -38,7 +39,8 @@ class PulumiStackConfig(dict):
             if type(val) in [str, int, float]:
                 pulumi_config[key] = ConfigValue(value=val)
             elif type(val) is dict and 'secure' in val:
-                pulumi_config[key] = ConfigValue(value=val['secure'], secret=True)
+                pulumi_config[key] = ConfigValue(
+                    value=val['secure'], secret=True)
             else:
                 json_val = json.dumps(val)
                 pulumi_config[key] = ConfigValue(value=json_val)
