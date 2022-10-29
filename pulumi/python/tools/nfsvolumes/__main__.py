@@ -30,7 +30,8 @@ pulumi_user = pulumi_config.get_pulumi_user()
 kube_stack_ref_id = f"{pulumi_user}/{kube_project_name}/{stack_name}"
 kube_stack_ref = pulumi.StackReference(kube_stack_ref_id)
 
-k8s_provider = k8s.Provider(resource_name=f'ingress-controller', kubeconfig=kubeconfig)
+k8s_provider = k8s.Provider(
+    resource_name=f'ingress-controller', kubeconfig=kubeconfig)
 
 ns = k8s.core.v1.Namespace(resource_name='nfsvols',
                            metadata={'name': 'nfsvols'},

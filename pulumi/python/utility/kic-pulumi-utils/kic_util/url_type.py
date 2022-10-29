@@ -42,4 +42,3 @@ class URLType(Enum):
             return URLType.GENERAL_TAR_GZ
 
         return URLType.UNKNOWN
-

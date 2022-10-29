@@ -91,7 +91,8 @@ class LinodeProvider(Provider):
                                            'alternatively this can be specified as the environment variable '
                                            'LINODE_TOKEN): ')
 
-        token = LinodeProvider.token(stack_config={'config': config}, env_config=env_config)
+        token = LinodeProvider.token(
+            stack_config={'config': config}, env_config=env_config)
         linode_cli = LinodeCli()
 
         cli_env = {}
@@ -99,11 +100,13 @@ class LinodeProvider(Provider):
         cli_env['LINODE_CLI_TOKEN'] = token
 
         # FQDN
-        config['kic-helm:fqdn'] = input(f'Fully qualified domain name (FQDN) for application: ')
+        config['kic-helm:fqdn'] = input(
+            f'Fully qualified domain name (FQDN) for application: ')
         print(f"FQDN: {config['kic-helm:fqdn']}")
 
         # SOA Email
-        config['linode:soa_email'] = input(f'DNS Start of Authority (SOA) email address for container registry domain: ').strip()
+        config['linode:soa_email'] = input(
+            f'DNS Start of Authority (SOA) email address for container registry domain: ').strip()
         print(f"SOA email address: {config['linode:soa_email']}")
 
         # Kubernetes versions
@@ -111,7 +114,8 @@ class LinodeProvider(Provider):
                                                    env=cli_env)
         print(f'Supported Kubernetes versions:\n{k8s_version_list}')
         default_version = defaults['linode:k8s_version'] or '1.22'
-        config['linode:k8s_version'] = input(f'Kubernetes version [{default_version}]: ').strip() or default_version
+        config['linode:k8s_version'] = input(
+            f'Kubernetes version [{default_version}]: ').strip() or default_version
         print(f"Kubernetes version: {config['linode:k8s_version']}")
 
         # Region
@@ -119,7 +123,8 @@ class LinodeProvider(Provider):
                                                env=cli_env)
         print(f'Supported regions:\n{regions_list}')
         default_region = defaults['linode:region'] or 'us-central'
-        config['linode:region'] = input(f'Region [{default_region}]: ').strip() or default_region
+        config['linode:region'] = input(
+            f'Region [{default_region}]: ').strip() or default_region
         print(f"Region: {config['linode:region']}")
 
         # Instance Type
@@ -127,7 +132,8 @@ class LinodeProvider(Provider):
                                                      env=cli_env)
         print(f'Supported instance types:\n{instance_type_list}')
         default_type = defaults['linode:instance_type'] or 'g6-standard-8'
-        config['linode:instance_type'] = input(f'Instance type [{default_type}]: ').strip() or default_type
+        config['linode:instance_type'] = input(
+            f'Instance type [{default_type}]: ').strip() or default_type
         print(f"Instance type: {config['linode:instance_type']}")
 
         # Node Count
@@ -177,14 +183,16 @@ class LinodeProvider(Provider):
     @staticmethod
     def _update_kubeconfig(params: PulumiProjectEventParams):
         if 'cluster_name' not in params.stack_outputs:
-            raise LinodeProviderException('Cannot find key [cluster_name] in stack output')
+            raise LinodeProviderException(
+                'Cannot find key [cluster_name] in stack output')
 
         cluster_name = params.stack_outputs['cluster_name'].value
         kubeconfig_encoded = params.stack_outputs['kubeconfig'].value
         kubeconfig_bytes = base64.b64decode(kubeconfig_encoded)
         kubeconfig = yaml.safe_load(kubeconfig_bytes)
 
-        update_kubeconfig(env=params.env_config, cluster_name=cluster_name, kubeconfig=kubeconfig)
+        update_kubeconfig(env=params.env_config,
+                          cluster_name=cluster_name, kubeconfig=kubeconfig)
 
 
 INSTANCE = LinodeProvider()

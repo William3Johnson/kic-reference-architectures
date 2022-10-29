@@ -53,7 +53,8 @@ if not coordinating_replicas:
 
 def project_name_from_project_dir(dirname: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -118,7 +119,7 @@ elastic_release_args = ReleaseArgs(
     # are available. Set this to true to skip waiting on resources being
     # available.
     skip_await=False,
-    # If we fail, clean up 
+    # If we fail, clean up
     cleanup_on_fail=True,
     # Provide a name for our release
     name="elastic",
@@ -131,8 +132,10 @@ elastic_release = Release("elastic", args=elastic_release_args)
 
 elastic_rname = elastic_release.status.name
 
-elastic_fqdn = Output.concat(elastic_rname, "-elasticsearch.logstore.svc.cluster.local")
-kibana_fqdn = Output.concat(elastic_rname, "-kibana.logstore.svc.cluster.local")
+elastic_fqdn = Output.concat(
+    elastic_rname, "-elasticsearch.logstore.svc.cluster.local")
+kibana_fqdn = Output.concat(
+    elastic_rname, "-kibana.logstore.svc.cluster.local")
 
 pulumi.export('elastic_hostname', pulumi.Output.unsecret(elastic_fqdn))
 pulumi.export('kibana_hostname', pulumi.Output.unsecret(kibana_fqdn))

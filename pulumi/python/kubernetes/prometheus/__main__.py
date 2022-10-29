@@ -14,7 +14,8 @@ from kic_util import pulumi_config
 
 def project_name_from_infrastructure_dir(dirname: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -86,7 +87,8 @@ if not helm_timeout:
 prometheus_secrets = Secret.get(resource_name='pulumi-secret-prometheus',
                                 id=pulumi_secrets['prometheus'],
                                 opts=pulumi.ResourceOptions(provider=k8s_provider)).data
-adminpass = pulumi.Output.unsecret(prometheus_secrets).apply(extract_adminpass_from_k8s_secrets)
+adminpass = pulumi.Output.unsecret(prometheus_secrets).apply(
+    extract_adminpass_from_k8s_secrets)
 
 prometheus_release_args = ReleaseArgs(
     chart=chart_name,
@@ -186,7 +188,8 @@ prometheus_release_args = ReleaseArgs(
     # Force update if required
     force_update=True)
 
-prometheus_release = Release("prometheus", args=prometheus_release_args, opts=pulumi.ResourceOptions(depends_on=[ns]))
+prometheus_release = Release(
+    "prometheus", args=prometheus_release_args, opts=pulumi.ResourceOptions(depends_on=[ns]))
 
 prom_status = prometheus_release.status
 
@@ -241,7 +244,7 @@ statsd_release_args = ReleaseArgs(
     # are available. Set this to true to skip waiting on resources being
     # available.
     skip_await=False,
-    # If we fail, clean up 
+    # If we fail, clean up
     cleanup_on_fail=True,
     # Provide a name for our release
     name="statsd",
@@ -262,6 +265,7 @@ pulumi.export("statsd_status", statsd_status)
 
 prom_rname = prometheus_release.status.name
 
-prom_fqdn = Output.concat(prom_rname, "-prometheus-server.prometheus.svc.cluster.local")
+prom_fqdn = Output.concat(
+    prom_rname, "-prometheus-server.prometheus.svc.cluster.local")
 
 pulumi.export('prom_hostname', pulumi.Output.unsecret(prom_fqdn))

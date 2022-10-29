@@ -40,7 +40,8 @@ class ContainerRegistry:
 
     def format_registry_url_for_docker_login(self):
         # We assume that the scheme is https because that's what is used most everywhere
-        registry_host_url = urllib.parse.urlparse(f'https://{self.registry_url}')
+        registry_host_url = urllib.parse.urlparse(
+            f'https://{self.registry_url}')
         # We strip out the path from the URL because it isn't used when logging into a repository
         return f'{registry_host_url.scheme}://{registry_host_url.hostname}'
 
@@ -77,7 +78,8 @@ class ContainerRegistry:
         decoded = str(base64.b64decode(encoded_token), 'ascii')
         parts = decoded.split(':', 2)
         if len(parts) != 2:
-            raise ValueError("Unexpected format for decoded ECR authorization token")
+            raise ValueError(
+                "Unexpected format for decoded ECR authorization token")
         username = parts[0]
         password = parts[1]
         return RegistryCredentials(username=username, password=password)

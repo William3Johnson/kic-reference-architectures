@@ -30,13 +30,15 @@ def select_image_tag_alias(image):
 
 def select_image_id(image):
     if 'image_id' not in image or not image['image_id']:
-        raise ValueError(f'no image id found in kic-image-build-stack: {image}')
+        raise ValueError(
+            f'no image id found in kic-image-build-stack: {image}')
     return image['image_id']
 
 
 def select_image_tag(image):
     if 'image_tag' not in image or not image['image_tag']:
-        raise ValueError(f'no image tag found in kic-image-build-stack: {image}')
+        raise ValueError(
+            f'no image tag found in kic-image-build-stack: {image}')
     return image['image_tag']
 
 
@@ -47,7 +49,8 @@ k8s_config = pulumi.Config('kubernetes')
 
 kic_image_build_project_name = project_name_from_project_dir('kic-image-build')
 kic_image_build_stack_ref_id = f"{pulumi_user}/{kic_image_build_project_name}/{stack_name}"
-kick_image_build_stack_ref = pulumi.StackReference(kic_image_build_stack_ref_id)
+kick_image_build_stack_ref = pulumi.StackReference(
+    kic_image_build_stack_ref_id)
 ingress_image = kick_image_build_stack_ref.require_output('ingress_image')
 
 # We default to using the image name alias because it is a more precise definition

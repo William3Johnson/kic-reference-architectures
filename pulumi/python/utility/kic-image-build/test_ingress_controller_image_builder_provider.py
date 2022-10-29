@@ -18,7 +18,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker build --build-arg IC_VERSION=1.11.1- --build-arg GIT_COMMIT= ' + \
                  '--build-arg VERSION=1.11.1 --tar get container -f build/Dockerfile ' + \
                  '-t 2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic:1.11.1 . --build-arg BUILD_OS=debian'
-        expected = DockerImageName('2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            '2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 
@@ -27,7 +28,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker    build  --build-arg IC_VERSION=1.11.1-    --build-arg GIT_COMMIT= ' + \
                  '--build-arg   VERSION=1.11.1 --tar get container   -f   build/Dockerfile ' + \
                  '  -t  2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic:1.11.1 . --build-arg BUILD_OS=debian'
-        expected = DockerImageName('2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            '2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 
@@ -36,7 +38,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker build --build-arg IC_VERSION=1.11.1- --build-arg GIT_COMMIT= ' + '\\' + os.linesep + \
                  '--build-arg VERSION=1.11.1 --tar get container -f build/Dockerfile ' + '\\' + os.linesep + \
                  '-t 2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic:1.11.1 . --build-arg BUILD_OS=debian'
-        expected = DockerImageName('2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            '2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 
@@ -45,7 +48,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker build --build-arg IC_VERSION=1.11.1- --build-arg GIT_COMMIT= ' + \
                  '--build-arg VERSION=1.11.1 --tar get container -f build/Dockerfile ' + \
                  '--tag 2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic:1.11.1 . --build-arg BUILD_OS=debian'
-        expected = DockerImageName('2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            '2423423422.dkr.ecr.us-west-9.amazonaws.com/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 
@@ -54,7 +58,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker build --build-arg IC_VERSION=1.11.1- --build-arg GIT_COMMIT= ' + \
                  '--build-arg VERSION=1.11.1 --tar get container -f build/Dockerfile ' + \
                  '-t myregistryhost:5000/fedora/nginx-kic:1.11.1 . --build-arg BUILD_OS=debian'
-        expected = DockerImageName('myregistryhost:5000/fedora/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            'myregistryhost:5000/fedora/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 
@@ -63,7 +68,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker build --build-arg IC_VERSION=1.11.1- --build-arg GIT_COMMIT= ' + \
                  '--build-arg VERSION=1.11.1 --tar get container -f build/Dockerfile ' + \
                  "-t 'myregistryhost:5000/fedora/nginx-kic:1.11.1' . --build-arg BUILD_OS=debian"
-        expected = DockerImageName('myregistryhost:5000/fedora/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            'myregistryhost:5000/fedora/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 
@@ -72,7 +78,8 @@ class TestIngressControllerImageBuilderProvider(unittest.TestCase):
                  '    docker build --build-arg IC_VERSION=1.11.1- --build-arg GIT_COMMIT= ' + \
                  '--build-arg VERSION=1.11.1 --tar get container -f build/Dockerfile ' + \
                  '-t "myregistryhost:5000/fedora/nginx-kic:1.11.1" . --build-arg BUILD_OS=debian'
-        expected = DockerImageName('myregistryhost:5000/fedora/nginx-kic', '1.11.1')
+        expected = DockerImageName(
+            'myregistryhost:5000/fedora/nginx-kic', '1.11.1')
         actual = self.provider.parse_image_name_from_output(stdout)
         self.assertStrEqual(expected, actual)
 

@@ -37,7 +37,8 @@ class IngressControllerImageBuilderProvider(BaseProvider):
 
     def __init__(self, resource: Optional[pulumi.Resource] = None,
                  debug_logger_func=None):
-        super().__init__(resource=resource, debug_logger_func=debug_logger_func, runner=external_process.run)
+        super().__init__(resource=resource,
+                         debug_logger_func=debug_logger_func, runner=external_process.run)
 
     @staticmethod
     def image_name_alias(make_target: str, image_tag) -> DockerImageName:
@@ -51,11 +52,13 @@ class IngressControllerImageBuilderProvider(BaseProvider):
     def make_target_from_image_name_alias(image_name_alias: str):
         tag_parts = image_name_alias.split(':')
         if len(tag_parts) < 2:
-            raise ValueError(f'No valid tag found on image_name_alias: {image_name_alias}')
+            raise ValueError(
+                f'No valid tag found on image_name_alias: {image_name_alias}')
         tag = tag_parts[-1]
         make_target_parts = tag.split('-')
         if len(make_target_parts) < 2:
-            raise ValueError(f'No valid make_target prefix on image_name_alias: {image_name_alias}')
+            raise ValueError(
+                f'No valid make_target prefix on image_name_alias: {image_name_alias}')
         make_target_prefix = make_target_parts[-1]
         return f'{make_target_prefix}-image'
 
@@ -132,7 +135,8 @@ class IngressControllerImageBuilderProvider(BaseProvider):
 
     @staticmethod
     def find_kic_source_dir(url: str) -> str:
-        extracted_path = archive_download.download_and_extract_archive_from_url(url)
+        extracted_path = archive_download.download_and_extract_archive_from_url(
+            url)
 
         # Sometimes the extracted directory contains a single directory that represents the
         # name and version of the KIC release. In that case, we navigate to that directory
@@ -145,26 +149,32 @@ class IngressControllerImageBuilderProvider(BaseProvider):
 
     def link_nginx_plus_files_to_source_dir(self, nginx_plus_args: NginxPlusArgs, source_dir: str):
         key_path = pathlib.Path(nginx_plus_args['key_path'])
-        key_link_path = pathlib.Path(os.path.join(source_dir, 'nginx-repo.key'))
+        key_link_path = pathlib.Path(
+            os.path.join(source_dir, 'nginx-repo.key'))
 
         if key_link_path.exists():
-            raise ValueError(f'File already exists at nginx repository key path: {key_link_path}')
+            raise ValueError(
+                f'File already exists at nginx repository key path: {key_link_path}')
 
         if key_path != key_link_path:
-            pulumi.log.debug(f'Creating nginx repository key symlink {key_path} -> {key_link_path}', self.resource)
+            pulumi.log.debug(
+                f'Creating nginx repository key symlink {key_path} -> {key_link_path}', self.resource)
             os.symlink(key_path, key_link_path)
         else:
             pulumi.log.info('Not creating nginx repository key symlink because it is already in the target path ',
                             self.resource)
 
         cert_path = pathlib.Path(nginx_plus_args['cert_path'])
-        cert_link_path = pathlib.Path(os.path.join(source_dir, 'nginx-repo.crt'))
+        cert_link_path = pathlib.Path(
+            os.path.join(source_dir, 'nginx-repo.crt'))
 
         if cert_link_path.exists():
-            raise ValueError(f'File already exists at nginx repository cert path: {cert_link_path}')
+            raise ValueError(
+                f'File already exists at nginx repository cert path: {cert_link_path}')
 
         if cert_path != cert_link_path:
-            pulumi.log.debug(f'Creating nginx repository cert symlink {cert_path} -> {cert_link_path}', self.resource)
+            pulumi.log.debug(
+                f'Creating nginx repository cert symlink {cert_path} -> {cert_link_path}', self.resource)
             os.symlink(cert_path, cert_link_path)
         else:
             pulumi.log.info('Not creating nginx repository cert symlink because it is already in the target path ',
@@ -180,18 +190,22 @@ class IngressControllerImageBuilderProvider(BaseProvider):
         if make_path:
             return make_path
 
-        raise ImageBuildStateError('unable to find `make` or `gmake` in the system PATH')
+        raise ImageBuildStateError(
+            'unable to find `make` or `gmake` in the system PATH')
 
     def build_image(self, props: Any) -> Dict[str, str]:
         pulumi.log.info('building from source', self.resource)
         kic_src_url = props['kic_src_url']
         make_target = props['make_target']
 
-        source_dir = IngressControllerImageBuilderProvider.find_kic_source_dir(kic_src_url)
-        pulumi.log.debug(f'Building KIC in source directory: {source_dir}', self.resource)
+        source_dir = IngressControllerImageBuilderProvider.find_kic_source_dir(
+            kic_src_url)
+        pulumi.log.debug(
+            f'Building KIC in source directory: {source_dir}', self.resource)
 
         if not os.path.isdir(source_dir):
-            raise ImageBuildStateError(f'Expected source code directory not found at path: {source_dir}')
+            raise ImageBuildStateError(
+                f'Expected source code directory not found at path: {source_dir}')
 
         # Link nginx repo certificates into the source directory so that they can be referenced from the build process
         if 'nginx_plus_args' in props and props['nginx_plus_args']:
@@ -210,19 +224,25 @@ class IngressControllerImageBuilderProvider(BaseProvider):
             pulumi.log.info(f'Running build: {build_cmd}')
             res, err = external_process.run(cmd=build_cmd, env=env)
             # Extract the image name so that it can be used later in the build process
-            image_name = IngressControllerImageBuilderProvider.parse_image_name_from_output(res)
+            image_name = IngressControllerImageBuilderProvider.parse_image_name_from_output(
+                res)
             if not image_name:
-                raise ImageBuildOutputParseError(f'Unable to parse image name from STDOUT: \n{res}')
+                raise ImageBuildOutputParseError(
+                    f'Unable to parse image name from STDOUT: \n{res}')
             if not image_name.tag:
-                raise ImageBuildOutputParseError(f'Unable to parse image tag from STDOUT: \n{res}')
-            image_id = IngressControllerImageBuilderProvider.parse_image_id_from_output(err)
+                raise ImageBuildOutputParseError(
+                    f'Unable to parse image tag from STDOUT: \n{res}')
+            image_id = IngressControllerImageBuilderProvider.parse_image_id_from_output(
+                err)
             if not image_id:
-                raise ImageBuildOutputParseError(f'Unable to parse image id from STDERR: \n{err}')
+                raise ImageBuildOutputParseError(
+                    f'Unable to parse image id from STDERR: \n{err}')
             pulumi.log.debug(os.linesep.join([res, err]), self.resource)
         finally:
             os.chdir(orig_dir)
 
-        name_alias = IngressControllerImageBuilderProvider.image_name_alias(make_target, image_name.tag)
+        name_alias = IngressControllerImageBuilderProvider.image_name_alias(
+            make_target, image_name.tag)
         self._docker_tag(source_image_identifier=image_id,
                          target_image_identifier=f'{name_alias.repository}:{name_alias.tag}')
 
@@ -234,13 +254,15 @@ class IngressControllerImageBuilderProvider(BaseProvider):
                 'kic_src_url': kic_src_url}
 
     def check(self, _olds: Any, news: Any) -> CheckResult:
-        failures = BaseProvider._check_for_required_params(news, IngressControllerImageBuilderProvider.REQUIRED_PROPS)
+        failures = BaseProvider._check_for_required_params(
+            news, IngressControllerImageBuilderProvider.REQUIRED_PROPS)
 
         parse_result = parse.urlparse(news['kic_src_url'])
         url_type = URLType.from_parsed_url(parse_result)
 
         if url_type == URLType.UNKNOWN:
-            failures.append(CheckFailure(property_='kic_src_url', reason=f"unsupported URL: {news['kic_src_url']}"))
+            failures.append(CheckFailure(property_='kic_src_url',
+                            reason=f"unsupported URL: {news['kic_src_url']}"))
 
         if 'nginx_plus_args' in news and news['nginx_plus_args']:
             pulumi.log.info(f"nginx_plus_args: {news['nginx_plus_args']}")
@@ -254,13 +276,15 @@ class IngressControllerImageBuilderProvider(BaseProvider):
 
             key_path = pathlib.Path(news['nginx_plus_args']['key_path'])
             if not key_path.is_file():
-                failures.append(CheckFailure(property_='nginx_plus_args.key_path', reason=f"not a file: {key_path}"))
+                failures.append(CheckFailure(
+                    property_='nginx_plus_args.key_path', reason=f"not a file: {key_path}"))
             elif not key_path.exists():
                 failures.append(CheckFailure(property_='nginx_plus_args.key_path',
                                              reason=f"file doesn't exist: {key_path}"))
             cert_path = pathlib.Path(news['nginx_plus_args']['cert_path'])
             if not cert_path.is_file():
-                failures.append(CheckFailure(property_='nginx_plus_args.cert_path', reason=f"not a file: {cert_path}"))
+                failures.append(CheckFailure(
+                    property_='nginx_plus_args.cert_path', reason=f"not a file: {cert_path}"))
             elif not cert_path.exists():
                 failures.append(CheckFailure(property_='nginx_plus_args.cert_path',
                                              reason=f"file doesn't exist: {cert_path}"))
@@ -270,11 +294,14 @@ class IngressControllerImageBuilderProvider(BaseProvider):
     def diff(self, _id: str, _olds: Any, _news: Any) -> DiffResult:
         # Don't process and signal that there have been changes if the always rebuild flag is set
         if 'always_rebuild' in _news and _news['always_rebuild']:
-            pulumi.log.debug('always_rebuild is set to true - rebuilding image', self.resource)
+            pulumi.log.debug(
+                'always_rebuild is set to true - rebuilding image', self.resource)
             return DiffResult(changes=True)
 
-        olds_make_target_defined = BaseProvider._is_key_defined('make_target', _olds)
-        olds_image_name_alias_defined = BaseProvider._is_key_defined('image_name_alias', _olds)
+        olds_make_target_defined = BaseProvider._is_key_defined(
+            'make_target', _olds)
+        olds_image_name_alias_defined = BaseProvider._is_key_defined(
+            'image_name_alias', _olds)
 
         # Derive the make_target from the already existing image_name_alias
         if not olds_make_target_defined and olds_image_name_alias_defined:
@@ -289,7 +316,8 @@ class IngressControllerImageBuilderProvider(BaseProvider):
             or not BaseProvider._new_and_old_val_equal('make_target', _news, _olds)
 
         if not changed:
-            pulumi.log.info('image definition not changed - skipping rebuild', self.resource)
+            pulumi.log.info(
+                'image definition not changed - skipping rebuild', self.resource)
 
         return DiffResult(changes=changed)
 
@@ -325,12 +353,14 @@ class IngressControllerImageBuilderProvider(BaseProvider):
                 outputs['image_tag_alias'] = parts[-1]
 
         if 'make_target' not in props:
-            make_target = IngressControllerImageBuilderProvider.make_target_from_image_name_alias(image_name_alias)
+            make_target = IngressControllerImageBuilderProvider.make_target_from_image_name_alias(
+                image_name_alias)
             outputs['make_target'] = make_target
 
         # The image id returned by the alias is primary for identifying a build of kic that is
         # related to the make_target specified.
-        alias_image_id = self._docker_image_id_from_image_name(image_name_alias)
+        alias_image_id = self._docker_image_id_from_image_name(
+            image_name_alias)
         if alias_image_id:
             outputs['image_id'] = alias_image_id
 

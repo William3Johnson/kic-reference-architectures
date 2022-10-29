@@ -6,9 +6,9 @@ import pulumi_linode as linode
 config = pulumi.Config('linode')
 
 api_token = config.get('token') or \
-            config.get_secret('token') or \
-            os.getenv('LINODE_TOKEN') or \
-            os.getenv('LINODE_CLI_TOKEN')
+    config.get_secret('token') or \
+    os.getenv('LINODE_TOKEN') or \
+    os.getenv('LINODE_CLI_TOKEN')
 
 # For whatever reason, the Linode provider does not pickup the token from the
 # stack configuration nor from the environment variables, so we do that work

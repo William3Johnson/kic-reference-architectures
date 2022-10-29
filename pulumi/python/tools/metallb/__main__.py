@@ -40,7 +40,8 @@ pulumi_user = pulumi_config.get_pulumi_user()
 kube_stack_ref_id = f"{pulumi_user}/{kube_project_name}/{stack_name}"
 kube_stack_ref = pulumi.StackReference(kube_stack_ref_id)
 
-k8s_provider = k8s.Provider(resource_name=f'ingress-controller', kubeconfig=kubeconfig)
+k8s_provider = k8s.Provider(
+    resource_name=f'ingress-controller', kubeconfig=kubeconfig)
 
 # Create the namespace for metallb
 ns = k8s.core.v1.Namespace(resource_name='metallb-system',
@@ -75,7 +76,8 @@ metallb_system_memberlist_secret = k8s.core.v1.Secret("metallb_systemMemberlistS
                                                           name="memberlist",
                                                           namespace="metallb-system",
                                                       ),
-                                                      opts=pulumi.ResourceOptions(depends_on=[ns])
+                                                      opts=pulumi.ResourceOptions(
+                                                          depends_on=[ns])
                                                       )
 
 # Create a config map
@@ -86,7 +88,8 @@ metallb_system_config_config_map = k8s.core.v1.ConfigMap("metallb_systemConfigCo
                                                              namespace="metallb-system",
                                                              name="config",
                                                          ),
-                                                         opts=pulumi.ResourceOptions(depends_on=[ns]),
+                                                         opts=pulumi.ResourceOptions(
+                                                             depends_on=[ns]),
                                                          data={
                                                              "config": """address-pools:
     - name: default

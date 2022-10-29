@@ -74,12 +74,14 @@ class DoctlCli:
 
 class DigitalOceanProvider(Provider):
     """Digital Ocean infrastructure provider"""
+
     def infra_type(self) -> str:
         return 'DO'
 
     def infra_execution_order(self) -> List[PulumiProject]:
         return [
-            PulumiProject(path='infrastructure/digitalocean/container-registry', description='DO Container Registry'),
+            PulumiProject(path='infrastructure/digitalocean/container-registry',
+                          description='DO Container Registry'),
             PulumiProject(path='infrastructure/digitalocean/domk8s', description='DO Kubernetes',
                           on_success=DigitalOceanProvider._update_kubeconfig),
         ]
@@ -101,7 +103,8 @@ class DigitalOceanProvider(Provider):
                                  k8s_execution_order=new_order)
 
         # Add DNS record project after ingress controller project
-        dns_record_project = PulumiProject(path='infrastructure/digitalocean/dns-record', description='DNS Record')
+        dns_record_project = PulumiProject(
+            path='infrastructure/digitalocean/dns-record', description='DNS Record')
         Provider._insert_project(project_path_to_insert_after='kubernetes/nginx/ingress-controller',
                                  project=dns_record_project,
                                  k8s_execution_order=new_order)
@@ -114,17 +117,20 @@ class DigitalOceanProvider(Provider):
 
         if 'DIGITALOCEAN_TOKEN' not in env_config:
             config['docean:token'] = input("Digital Ocean API token (this is stored in plain-text - "
-                                                 "alternatively this can be specified as the environment variable "
-                                                 "DIGITALOCEAN_TOKEN): ")
+                                           "alternatively this can be specified as the environment variable "
+                                           "DIGITALOCEAN_TOKEN): ")
 
-        token = DigitalOceanProvider.token(stack_config={'config': config}, env_config=env_config)
+        token = DigitalOceanProvider.token(
+            stack_config={'config': config}, env_config=env_config)
         do_cli = DoctlCli(access_token=token)
 
         # FQDN
-        config['kic-helm:fqdn'] = input(f'Fully qualified domain name (FQDN) for application: ')
+        config['kic-helm:fqdn'] = input(
+            f'Fully qualified domain name (FQDN) for application: ')
 
         # Kubernetes versions
-        k8s_versions_json_str, _ = external_process.run(do_cli.get_kubernetes_versions_json())
+        k8s_versions_json_str, _ = external_process.run(
+            do_cli.get_kubernetes_versions_json())
         k8s_versions_json = json.loads(k8s_versions_json_str)
         k8s_version_slugs = [version['slug'] for version in k8s_versions_json]
 
@@ -132,22 +138,26 @@ class DigitalOceanProvider(Provider):
         for slug in k8s_version_slugs:
             print(f'  {slug}')
         default_version = defaults['docean:k8s_version'] or k8s_version_slugs[0]
-        config['docean:k8s_version'] = input(f'Kubernetes version [{default_version}]: ').strip() or default_version
+        config['docean:k8s_version'] = input(
+            f'Kubernetes version [{default_version}]: ').strip() or default_version
         print(f"Kubernetes version: {config['docean:k8s_version']}")
 
         # Kubernetes regions
-        k8s_regions_json_str, _ = external_process.run(do_cli.get_kubernetes_regions_json())
+        k8s_regions_json_str, _ = external_process.run(
+            do_cli.get_kubernetes_regions_json())
         k8s_regions_json = json.loads(k8s_regions_json_str)
         default_region = defaults['docean:region'] or k8s_regions_json[-1]['slug']
 
         print('Supported Regions:')
         for item in k8s_regions_json:
             print(f"  {item['name']}: {item['slug']}")
-        config['docean:region'] = input(f'Region [{default_region}]: ').strip() or default_region
+        config['docean:region'] = input(
+            f'Region [{default_region}]: ').strip() or default_region
         print(f"Region: {config['docean:region']}")
 
         # Kubernetes instance size
-        k8s_sizes_json_str, _ = external_process.run(do_cli.get_kubernetes_instance_sizes_json())
+        k8s_sizes_json_str, _ = external_process.run(
+            do_cli.get_kubernetes_instance_sizes_json())
         k8s_sizes_json = json.loads(k8s_sizes_json_str)
         k8s_sizes_slugs = [size['slug'] for size in k8s_sizes_json]
         default_size = defaults['docean:instance_size'] or 's-2vcpu-4gb'
@@ -156,7 +166,8 @@ class DigitalOceanProvider(Provider):
         for slug in k8s_sizes_slugs:
             print(f'  {slug}')
 
-        config['docean:instance_size'] = input(f'Instance size [{default_size}]: ').strip() or default_size
+        config['docean:instance_size'] = input(
+            f'Instance size [{default_size}]: ').strip() or default_size
         print(f"Instance size: {config['docean:instance_size']}")
 
         # Kubernetes instance count
@@ -174,17 +185,20 @@ class DigitalOceanProvider(Provider):
                               stack_config: Union[Dict[Hashable, Any], list, None],
                               env_config: Mapping[str, str]):
         super().validate_stack_config(stack_config=stack_config, env_config=env_config)
-        token = DigitalOceanProvider.token(stack_config=stack_config, env_config=env_config)
+        token = DigitalOceanProvider.token(
+            stack_config=stack_config, env_config=env_config)
         do_cli = DoctlCli(access_token=token)
         _, err = external_process.run(cmd=do_cli.validate_credentials_cmd())
         if err:
-            print(f'Digital Ocean authentication error: {err}', file=sys.stderr)
+            print(
+                f'Digital Ocean authentication error: {err}', file=sys.stderr)
             sys.exit(3)
 
     @staticmethod
     def _update_kubeconfig(params: PulumiProjectEventParams):
         if 'cluster_name' not in params.stack_outputs:
-            raise DigitalOceanProviderException('Cannot find key [cluster_name] in stack output')
+            raise DigitalOceanProviderException(
+                'Cannot find key [cluster_name] in stack output')
 
         kubeconfig = yaml.safe_load(params.stack_outputs['kubeconfig'].value)
         full_cluster_name = kubeconfig['clusters'][0]['name']
@@ -193,14 +207,18 @@ class DigitalOceanProvider(Provider):
         clusters = filter(lambda cluster: cluster != 'NAME', res.splitlines())
 
         if full_cluster_name in clusters:
-            print(f'Local kubectl configuration already has credentials for cluster {full_cluster_name}')
+            print(
+                f'Local kubectl configuration already has credentials for cluster {full_cluster_name}')
         else:
-            print(f'Adding credentials for cluster {full_cluster_name} to local kubectl configuration')
+            print(
+                f'Adding credentials for cluster {full_cluster_name} to local kubectl configuration')
             cluster_name = params.stack_outputs['cluster_name'].value
-            token = DigitalOceanProvider.token(stack_config=params.config, env_config=params.env_config)
+            token = DigitalOceanProvider.token(
+                stack_config=params.config, env_config=params.env_config)
             do_cli = DoctlCli(access_token=token)
 
-            res, _ = external_process.run(do_cli.save_kubernetes_cluster_cmd(cluster_name))
+            res, _ = external_process.run(
+                do_cli.save_kubernetes_cluster_cmd(cluster_name))
             if res:
                 print(res)
 

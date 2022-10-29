@@ -1,10 +1,10 @@
 ---
-# This version of the kube proxy configuration is required to change the 
+# This version of the kube proxy configuration is required to change the
 # bind address for metrics from 127.0.0.1 to 0.0.0.0. See:
 # https://github.com/prometheus-community/helm-charts/issues/977
-# for details as why this is required. 
+# for details as why this is required.
 #
-# Note this is a hack, and as such should be tested with any version 
+# Note this is a hack, and as such should be tested with any version
 # changes to Kubernetes. You have been warned.
 #
 apiVersion: v1

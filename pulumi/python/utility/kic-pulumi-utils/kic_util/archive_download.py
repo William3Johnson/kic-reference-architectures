@@ -52,7 +52,8 @@ def download_and_extract_targz_archive_from_url(url: str, temp_prefix: Optional[
                     tarball.extractall(path=extract_dir)
 
     try:
-        temp_dir = extract_stream_into_temp_dir(extract_func=download, temp_prefix=temp_prefix)
+        temp_dir = extract_stream_into_temp_dir(
+            extract_func=download, temp_prefix=temp_prefix)
         return str(temp_dir)
     except DownloadExtractError as e:
         e.url = url
@@ -76,7 +77,8 @@ def checkout_from_git(parsed_url: parse.ParseResult, temp_prefix: Optional[str])
         Repo.clone_from(url=url, to_path=working_dir, multi_options=opts)
 
     try:
-        temp_dir = extract_stream_into_temp_dir(extract_func=checkout, temp_prefix=temp_prefix)
+        temp_dir = extract_stream_into_temp_dir(
+            extract_func=checkout, temp_prefix=temp_prefix)
         return str(temp_dir)
     except DownloadExtractError as e:
         e.url = url

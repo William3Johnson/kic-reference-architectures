@@ -33,7 +33,8 @@ def configure_harbor(params: List[str]) -> bool:
     user = params[1]
     password = params[2]
     base_url = f'https://{hostname}/api/v2.0'
-    base64creds = str(base64.b64encode(f'{user}:{password}'.encode('ascii')), 'ascii')
+    base64creds = str(base64.b64encode(
+        f'{user}:{password}'.encode('ascii')), 'ascii')
     max_retries = 12
     retries = 0
     timeout = 1000
@@ -52,7 +53,8 @@ def configure_harbor(params: List[str]) -> bool:
                 components = health_check['components']
                 for component in components:
                     if component['status'] != 'healthy':
-                        pulumi.log.info(f"Harbor component [{component['name']}] is not healthy")
+                        pulumi.log.info(
+                            f"Harbor component [{component['name']}] is not healthy")
                         return False
 
                 return True
@@ -61,7 +63,8 @@ def configure_harbor(params: List[str]) -> bool:
             if e.errno == -3:
                 raise e
 
-            pulumi.log.info(f'Unable to connect to Harbor [try {retries+1} of {max_retries}]: {e}')
+            pulumi.log.info(
+                f'Unable to connect to Harbor [try {retries+1} of {max_retries}]: {e}')
             return False
 
     def modify_default_project_registry():

@@ -54,9 +54,11 @@ def update_kubeconfig(cluster_name: str, env: Mapping[str, str], kubeconfig: Map
     writer.write_kubeconfig(config)
 
     if config.has_cluster(cluster_name):
-        LOG.info('Updated context %s in %s', new_context_dict["name"], config.path)
+        LOG.info('Updated context %s in %s',
+                 new_context_dict["name"], config.path)
     else:
-        LOG.info('Added new context %s to %s', new_context_dict["name"], config.path)
+        LOG.info('Added new context %s to %s',
+                 new_context_dict["name"], config.path)
 
 
 # Everything after this line is sourced from the AWS SDK
@@ -79,9 +81,9 @@ class SafeOrderedDumper(yaml.SafeDumper):
 
 
 def _ordered_representer(dumper, data):
-        return dumper.represent_mapping(
-            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-            data.items())
+    return dumper.represent_mapping(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        data.items())
 
 
 SafeOrderedDumper.add_representer(OrderedDict, _ordered_representer)
@@ -112,8 +114,8 @@ def _ordered_constructor(loader, node):
 
 
 SafeOrderedLoader.add_constructor(
-                    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-                    _ordered_constructor)
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    _ordered_constructor)
 
 
 def ordered_yaml_load(stream):
@@ -345,7 +347,7 @@ class KubeconfigWriter(object):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise KubeconfigInaccessableError(
-                        "Can't create directory for writing: {0}".format(e))
+                    "Can't create directory for writing: {0}".format(e))
         try:
             with os.fdopen(
                     os.open(

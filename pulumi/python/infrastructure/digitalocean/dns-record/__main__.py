@@ -13,7 +13,8 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def project_name_of_ingress_controller_project():
-    project_path = os.path.join(script_dir, '..', '..', '..', 'kubernetes', 'nginx', 'ingress-controller')
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'kubernetes', 'nginx', 'ingress-controller')
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -31,9 +32,10 @@ fqdn = config.require('fqdn')
 #
 # Split our hostname off the domain name to build the DNS records
 #
-hostname, domainname = fqdn.split('.',1)
+hostname, domainname = fqdn.split('.', 1)
 
-ingress_domain = docean.Domain.get(resource_name='ingress-domain', id=domainname, name=domainname)
+ingress_domain = docean.Domain.get(
+    resource_name='ingress-domain', id=domainname, name=domainname)
 ingress_a_record = docean.DnsRecord(resource_name='ingress-a-record',
                                     name=hostname,
                                     domain=ingress_domain.id,

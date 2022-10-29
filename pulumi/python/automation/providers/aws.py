@@ -15,9 +15,10 @@ from .pulumi_project import PulumiProjectEventParams
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RUNNER_LOG = logging.getLogger('runner')
-AUTH_ERR_MSG = '''Unable to authenticate to AWS with provided credentials. Are the settings in your ~/.aws/credentials 
+AUTH_ERR_MSG = '''Unable to authenticate to AWS with provided credentials. Are the settings in your ~/.aws/credentials
 correct? Error: %s
 '''
+
 
 class AwsProviderException(Exception):
     pass
@@ -71,6 +72,7 @@ class AwsCli:
 
 class AwsProvider(Provider):
     """AWS infrastructure provider"""
+
     def infra_type(self) -> str:
         return 'AWS'
 
@@ -83,7 +85,7 @@ class AwsProvider(Provider):
         ]
 
     def new_stack_config(self, env_config, defaults: Union[Dict[Hashable, Any], list, None]) -> Union[
-        Dict[Hashable, Any], list, None]:
+            Dict[Hashable, Any], list, None]:
         config = super().new_stack_config(env_config, defaults)
 
         # AWS region
@@ -92,7 +94,8 @@ class AwsProvider(Provider):
         else:
             default_region = defaults['aws:region']
 
-        aws_region = input(f'AWS region to use [{default_region}]: ').strip() or default_region
+        aws_region = input(
+            f'AWS region to use [{default_region}]: ').strip() or default_region
         config['aws:region'] = aws_region
         print(f"AWS region: {config['aws:region']}")
 
@@ -110,7 +113,8 @@ class AwsProvider(Provider):
 
         aws_cli = AwsCli(region=aws_region, profile=aws_profile)
 
-        _, err = external_process.run(cmd=aws_cli.validate_credentials_cmd(), suppress_error=True)
+        _, err = external_process.run(
+            cmd=aws_cli.validate_credentials_cmd(), suppress_error=True)
         if err:
             RUNNER_LOG.error(AUTH_ERR_MSG, err.lstrip())
             sys.exit(3)
@@ -141,14 +145,16 @@ class AwsProvider(Provider):
 
         # EKS version
         default_version = defaults['eks:k8s_version'] or '1.21'
-        config['eks:k8s_version'] = input(f'EKS Kubernetes version [{default_version}]: ').strip() or default_version
+        config['eks:k8s_version'] = input(
+            f'EKS Kubernetes version [{default_version}]: ').strip() or default_version
         print(f"EKS Kubernetes version: {config['eks:k8s_version']}")
 
         # EKS instance type
         default_inst_type = defaults['eks:instance_type'] or 't2.large'
-        config['eks:instance_type'] = input(f'EKS instance type [{default_inst_type}]: ').strip() or default_inst_type
+        config['eks:instance_type'] = input(
+            f'EKS instance type [{default_inst_type}]: ').strip() or default_inst_type
         print(f"EKS instance type: {config['eks:instance_type']}")
-        
+
         # Minimum number of compute instances for cluster
         default_min_size = defaults['eks:min_size'] or 3
         while 'eks:min_size' not in config:
@@ -157,7 +163,7 @@ class AwsProvider(Provider):
             if type(min_size) == int or min_size.isdigit():
                 config['eks:min_size'] = int(min_size)
         print(f"EKS minimum cluster size: {config['eks:min_size']}")
-        
+
         # Maximum number of compute instances for cluster
         default_max_size = defaults['eks:max_size'] or 12
         while 'eks:max_size' not in config:
@@ -188,8 +194,10 @@ class AwsProvider(Provider):
             raise InvalidConfigurationException('When using the AWS provider, the region [aws:region] '
                                                 'must be specified')
 
-        aws_cli = AwsCli(region=config['aws:region'], profile=config['aws:profile'])
-        _, err = external_process.run(cmd=aws_cli.validate_credentials_cmd(), suppress_error=True)
+        aws_cli = AwsCli(region=config['aws:region'],
+                         profile=config['aws:profile'])
+        _, err = external_process.run(
+            cmd=aws_cli.validate_credentials_cmd(), suppress_error=True)
         if err:
             RUNNER_LOG.error(AUTH_ERR_MSG, err.lstrip())
             sys.exit(3)
@@ -197,7 +205,8 @@ class AwsProvider(Provider):
     @staticmethod
     def _update_kubeconfig(params: PulumiProjectEventParams):
         if 'cluster_name' not in params.stack_outputs:
-            raise AwsProviderException('Cannot find key [cluster_name] in stack output')
+            raise AwsProviderException(
+                'Cannot find key [cluster_name] in stack output')
 
         aws_cli = AwsCli(region=params.config.get('aws:region').value,
                          profile=params.config.get('aws:profile').value)

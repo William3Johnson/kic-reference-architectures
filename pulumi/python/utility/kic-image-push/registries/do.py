@@ -17,8 +17,10 @@ class DigitalOceanContainerRegistry(ContainerRegistry):
             'container-registry')
         container_registry_stack_ref_id = f"{pulumi_user}/{container_registry_project_name}/{stack_name}"
         stack_ref = StackReference(container_registry_stack_ref_id)
-        container_registry_output = stack_ref.require_output('container_registry')
-        registry_name_output = stack_ref.require_output('container_registry_name')
+        container_registry_output = stack_ref.require_output(
+            'container_registry')
+        registry_name_output = stack_ref.require_output(
+            'container_registry_name')
 
         def _docker_credentials() -> Output[str]:
             one_hour = 3_600 * 4
@@ -35,7 +37,8 @@ class DigitalOceanContainerRegistry(ContainerRegistry):
             server_url = container_registry['server_url']
             endpoint = container_registry['endpoint']
             registry_url = f'{endpoint}/nginx-ingress'
-            _credentials = DigitalOceanContainerRegistry._decode_docker_credentials(server_url, do_docker_creds)
+            _credentials = DigitalOceanContainerRegistry._decode_docker_credentials(
+                server_url, do_docker_creds)
 
             return cls(stack_name=stack_name, pulumi_user=pulumi_user,
                        registry_url=registry_url, credentials=_credentials)
@@ -48,7 +51,8 @@ class DigitalOceanContainerRegistry(ContainerRegistry):
     @staticmethod
     def project_name_from_do_dir(dirname: str):
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_path = os.path.join(script_dir, '..', '..', '..', 'infrastructure', 'digitalocean', dirname)
+        project_path = os.path.join(
+            script_dir, '..', '..', '..', 'infrastructure', 'digitalocean', dirname)
         return pulumi_config.get_pulumi_project_name(project_path)
 
     @staticmethod

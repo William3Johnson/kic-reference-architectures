@@ -11,7 +11,8 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 def project_name_from_project_dir(dirname: str):
     global script_dir
-    project_path = os.path.join(script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -34,7 +35,8 @@ for key in keys:
     if bag_name not in config_secrets.keys():
         config_secrets[bag_name] = {}
 
-    config_secrets[bag_name][config_key] = pulumi.Output.unsecret(config_bag.require_secret(config_key))
+    config_secrets[bag_name][config_key] = pulumi.Output.unsecret(
+        config_bag.require_secret(config_key))
 
 secrets_output = {}
 for k, v in config_secrets.items():

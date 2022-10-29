@@ -8,7 +8,8 @@ from kic_util import pulumi_config
 
 def infrastructure_project_name_from_project_dir(dirname: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -20,7 +21,8 @@ k8_project_name = infrastructure_project_name_from_project_dir('kubeconfig')
 k8_stack_ref_id = f"{pulumi_user}/{k8_project_name}/{stack_name}"
 k8_stack_ref = pulumi.StackReference(k8_stack_ref_id)
 kubeconfig = k8_stack_ref.require_output('kubeconfig').apply(lambda c: str(c))
-cluster_name = k8_stack_ref.require_output('cluster_name').apply(lambda c: str(c))
+cluster_name = k8_stack_ref.require_output(
+    'cluster_name').apply(lambda c: str(c))
 
 k8s_provider = k8s.Provider(resource_name=f'ingress-controller',
                             kubeconfig=kubeconfig)

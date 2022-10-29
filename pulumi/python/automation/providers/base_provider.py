@@ -31,9 +31,9 @@ class Provider:
         def is_provider(file: pathlib.Path) -> bool:
             # Filter out the non-provider files
             return file.is_file() and \
-                   not file.stem.endswith('base_provider') and \
-                   not file.stem.endswith('pulumi_project') and \
-                   not file.stem.endswith('update_kubeconfig')
+                not file.stem.endswith('base_provider') and \
+                not file.stem.endswith('pulumi_project') and \
+                not file.stem.endswith('update_kubeconfig')
 
         path = pathlib.Path(SCRIPT_DIR)
         return [os.path.splitext(file.stem)[0] for file in path.iterdir() if is_provider(file)]
@@ -44,7 +44,8 @@ class Provider:
 
         for key in required_keys:
             if key not in config.keys():
-                raise InvalidConfigurationException(msg=f'Required configuration key [{key}] not found', key=key)
+                raise InvalidConfigurationException(
+                    msg=f'Required configuration key [{key}] not found', key=key)
 
     @abc.abstractmethod
     def infra_type(self) -> str:
@@ -68,7 +69,8 @@ class Provider:
 
     def validate_env_config(self, env_config: Mapping[str, str]):
         """Validates that the passed environment variables are correct"""
-        Provider.validate_env_config_required_keys(['PULUMI_STACK'], env_config)
+        Provider.validate_env_config_required_keys(
+            ['PULUMI_STACK'], env_config)
 
     def validate_stack_config(self,
                               stack_config: Union[Dict[Hashable, Any], list, None],
@@ -79,20 +81,26 @@ class Provider:
     def k8s_execution_order(self) -> List[PulumiProject]:
         """Pulumi Kubernetes projects to be executed in sequential order"""
         return [
-            PulumiProject(path='infrastructure/kubeconfig', description='Kubeconfig'),
+            PulumiProject(path='infrastructure/kubeconfig',
+                          description='Kubeconfig'),
             PulumiProject(path='kubernetes/secrets', description='Secrets'),
-            PulumiProject(path='utility/kic-image-build', description='KIC Image Build'),
-            PulumiProject(path='utility/kic-image-push', description='KIC Image Push'),
+            PulumiProject(path='utility/kic-image-build',
+                          description='KIC Image Build'),
+            PulumiProject(path='utility/kic-image-push',
+                          description='KIC Image Push'),
             PulumiProject(path='kubernetes/nginx/ingress-controller-namespace',
                           description='K8S Ingress NS'),
-            PulumiProject(path='kubernetes/nginx/ingress-controller', description='Ingress Controller'),
+            PulumiProject(path='kubernetes/nginx/ingress-controller',
+                          description='Ingress Controller'),
             PulumiProject(path='kubernetes/logstore', description='Logstore'),
             PulumiProject(path='kubernetes/logagent', description='Log Agent'),
-            PulumiProject(path='kubernetes/certmgr', description='Cert Manager'),
+            PulumiProject(path='kubernetes/certmgr',
+                          description='Cert Manager'),
             PulumiProject(path='kubernetes/prometheus', description='Prometheus',
                           config_keys_with_secrets=[SecretConfigKey(key_name='prometheus:adminpass',
                                                                     prompt='Prometheus administrator password')]),
-            PulumiProject(path='kubernetes/observability', description='Observability'),
+            PulumiProject(path='kubernetes/observability',
+                          description='Observability'),
             PulumiProject(path='kubernetes/applications/sirius', description='Bank of Sirius',
                           config_keys_with_secrets=[SecretConfigKey(key_name='sirius:accounts_pwd',
                                                                     prompt='Bank of Sirius Accounts Database password'),
@@ -164,6 +172,7 @@ class Provider:
                                                                       k8s_execution_order)
 
         if project_position < 0:
-            raise ValueError(f'Could not find project at path {project_path_to_insert_after}')
+            raise ValueError(
+                f'Could not find project at path {project_path_to_insert_after}')
 
         k8s_execution_order.insert(project_position + 1, project)

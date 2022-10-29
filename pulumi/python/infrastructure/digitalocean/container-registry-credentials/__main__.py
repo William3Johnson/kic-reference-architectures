@@ -20,7 +20,8 @@ def project_name_from_same_parent(directory: str):
 
 
 def project_name_of_namespace_project():
-    project_path = os.path.join(script_dir, '..', '..', '..', 'kubernetes', 'nginx', 'ingress-controller-namespace')
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'kubernetes', 'nginx', 'ingress-controller-namespace')
     return pulumi_config.get_pulumi_project_name(project_path)
 
 

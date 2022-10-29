@@ -9,12 +9,14 @@ config = pulumi.Config('kubernetes')
 # Determine directory path
 def project_name_from_project_dir(dirname1: str, dirname2: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'python', 'infrastructure', dirname1, dirname2)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'python', 'infrastructure', dirname1, dirname2)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
 def get_kubeconfig():
-    decoded = k8_stack_ref.require_output('kubeconfig').apply(lambda c: str(base64.b64decode(c), 'utf-8'))
+    decoded = k8_stack_ref.require_output('kubeconfig').apply(
+        lambda c: str(base64.b64decode(c), 'utf-8'))
     kubeconfig = pulumi.Output.secret(decoded)
     return kubeconfig
 
@@ -39,8 +41,10 @@ if infra_type == 'AWS':
     k8_project_name = project_name_from_project_dir('aws', 'eks')
     k8_stack_ref_id = f"{pulumi_user}/{k8_project_name}/{stack_name}"
     k8_stack_ref = pulumi.StackReference(k8_stack_ref_id)
-    kubeconfig = k8_stack_ref.require_output('kubeconfig').apply(lambda c: str(c))
-    cluster_name = k8_stack_ref.require_output('cluster_name').apply(lambda c: str(c))
+    kubeconfig = k8_stack_ref.require_output(
+        'kubeconfig').apply(lambda c: str(c))
+    cluster_name = k8_stack_ref.require_output(
+        'cluster_name').apply(lambda c: str(c))
     #
     # Export the clusters' kubeconfig
     #
@@ -54,9 +58,12 @@ elif infra_type == 'DO':
     k8_project_name = project_name_from_project_dir('digitalocean', 'domk8s')
     k8_stack_ref_id = f"{pulumi_user}/{k8_project_name}/{stack_name}"
     k8_stack_ref = pulumi.StackReference(k8_stack_ref_id)
-    kubeconfig = k8_stack_ref.require_output('kubeconfig').apply(lambda c: str(c))
-    cluster_name = k8_stack_ref.require_output('cluster_name').apply(lambda c: str(c))
-    cluster_id = k8_stack_ref.require_output('cluster_id').apply(lambda c: str(c))
+    kubeconfig = k8_stack_ref.require_output(
+        'kubeconfig').apply(lambda c: str(c))
+    cluster_name = k8_stack_ref.require_output(
+        'cluster_name').apply(lambda c: str(c))
+    cluster_id = k8_stack_ref.require_output(
+        'cluster_id').apply(lambda c: str(c))
     #
     # Export the clusters' kubeconfig
     #
@@ -70,9 +77,12 @@ elif infra_type == 'LKE':
     k8_project_name = project_name_from_project_dir('linode', 'lke')
     k8_stack_ref_id = f"{pulumi_user}/{k8_project_name}/{stack_name}"
     k8_stack_ref = pulumi.StackReference(k8_stack_ref_id)
-    cluster_name = k8_stack_ref.require_output('cluster_name').apply(lambda c: str(c))
-    cluster_id = k8_stack_ref.require_output('cluster_id').apply(lambda c: str(c))
-    kubeconfig = k8_stack_ref.require_output('kubeconfig').apply(lambda c: str(base64.b64decode(c), 'utf-8'))
+    cluster_name = k8_stack_ref.require_output(
+        'cluster_name').apply(lambda c: str(c))
+    cluster_id = k8_stack_ref.require_output(
+        'cluster_id').apply(lambda c: str(c))
+    kubeconfig = k8_stack_ref.require_output('kubeconfig').apply(
+        lambda c: str(base64.b64decode(c), 'utf-8'))
     #
     # Export the clusters' kubeconfig
     #

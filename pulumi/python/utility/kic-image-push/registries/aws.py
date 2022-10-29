@@ -13,12 +13,14 @@ class ElasticContainerRegistry(ContainerRegistry):
     @classmethod
     def instance(cls, stack_name: str, pulumi_user: str) -> Output[ContainerRegistry]:
         super().instance(stack_name, pulumi_user)
-        ecr_project_name = ElasticContainerRegistry.aws_project_name_from_project_dir('ecr')
+        ecr_project_name = ElasticContainerRegistry.aws_project_name_from_project_dir(
+            'ecr')
         ecr_stack_ref_id = f"{pulumi_user}/{ecr_project_name}/{stack_name}"
         stack_ref = StackReference(ecr_stack_ref_id)
         # Async query for credentials from stack reference
         ecr_registry_id = stack_ref.require_output('registry_id')
-        credentials_output = ecr_registry_id.apply(ElasticContainerRegistry.get_ecr_credentials)
+        credentials_output = ecr_registry_id.apply(
+            ElasticContainerRegistry.get_ecr_credentials)
         # Async query for repository url from stack reference
         # Note that AWS ECR refers to itself as a repository and not a registry, we aim to keep
         # that naming consistent when referring directly to ECR nouns
@@ -32,7 +34,8 @@ class ElasticContainerRegistry(ContainerRegistry):
     @staticmethod
     def aws_project_name_from_project_dir(dirname: str):
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_path = os.path.join(script_dir, '..', '..', '..', 'infrastructure', 'aws', dirname)
+        project_path = os.path.join(
+            script_dir, '..', '..', '..', 'infrastructure', 'aws', dirname)
         return pulumi_config.get_pulumi_project_name(project_path)
 
     @staticmethod
@@ -54,7 +57,8 @@ class ElasticContainerRegistry(ContainerRegistry):
         docker_api_url = self._ecr_docker_api_url()
         auth_tuple = (self.credentials.username, self.credentials.password)
 
-        log.debug(f'Querying for latest image id: {docker_api_url}/manifests/{image_tag}')
+        log.debug(
+            f'Querying for latest image id: {docker_api_url}/manifests/{image_tag}')
         with requests.get(f'{docker_api_url}/manifests/{image_tag}', auth=auth_tuple) as response:
             if response.status_code != 200:
                 log.warn(f'Unable to query ECR directly for image id')

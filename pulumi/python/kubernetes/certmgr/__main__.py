@@ -10,7 +10,8 @@ from kic_util import pulumi_config
 
 def project_name_from_project_dir(dirname: str):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.join(script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
+    project_path = os.path.join(
+        script_dir, '..', '..', '..', 'python', 'infrastructure', dirname)
     return pulumi_config.get_pulumi_project_name(project_path)
 
 
@@ -73,7 +74,7 @@ certmgr_release_args = ReleaseArgs(
     # are available. Set this to true to skip waiting on resources being
     # available.
     skip_await=False,
-    # If we fail, clean up 
+    # If we fail, clean up
     cleanup_on_fail=True,
     # Provide a name for our release
     name="certmgr",
@@ -82,7 +83,8 @@ certmgr_release_args = ReleaseArgs(
     # Force update if required
     force_update=True)
 
-certmgr_release = Release("certmgr", args=certmgr_release_args, opts=pulumi.ResourceOptions(depends_on=ns))
+certmgr_release = Release("certmgr", args=certmgr_release_args,
+                          opts=pulumi.ResourceOptions(depends_on=ns))
 
 status = certmgr_release.status
 pulumi.export("certmgr_status", status)

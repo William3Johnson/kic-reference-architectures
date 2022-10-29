@@ -24,7 +24,8 @@ def println_nocolor(text: str, output: typing.TextIO = sys.stdout):
 if os.environ.get('NO_COLOR'):
     PRINTLN_FUNC = println_nocolor
 else:
-    lolcat_fields = ['animate', 'duration', 'force', 'freq', 'mode', 'speed', 'spread', 'os']
+    lolcat_fields = ['animate', 'duration', 'force',
+                     'freq', 'mode', 'speed', 'spread', 'os']
     LolCatOptions = collections.namedtuple('LolCatOptions', lolcat_fields)
 
     # Unfortunately, we do the below hack to load the lolcat code because it was not written
@@ -59,4 +60,3 @@ else:
         PRINTLN_FUNC = println_color
     else:
         PRINTLN_FUNC = println_nocolor
-
